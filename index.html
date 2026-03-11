@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Tour du Monde en FLE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #f0f4f8; }
+        .card { transition: transform 0.3s ease; }
+        .card:hover { transform: translateY(-5px); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <header class="text-center mb-10">
+        <h1 class="text-4xl md:text-6xl font-bold text-blue-800 mb-2">🌍 Le Tour du Monde en FLE</h1>
+        <p class="text-xl text-gray-600 italic">Explora la diversidad de la Francofonía</p>
+    </header>
+
+    <section class="max-w-6xl mx-auto mb-16">
+        <h2 class="text-3xl font-bold mb-6 text-center border-b-4 border-yellow-400 inline-block">1. Destinations Francophones</h2>
+        <div id="regions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+    </section>
+
+    <section class="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl border-t-8 border-blue-600">
+        <h2 class="text-3xl font-bold mb-6 text-center">2. Jeu: ¿Qué harías? 🤔</h2>
+        <div id="quiz-container">
+            <p id="situation-text" class="text-2xl mb-6 font-semibold text-gray-800"></p>
+            <div id="options-container" class="space-y-4">
+                </div>
+            <div id="feedback" class="mt-6 p-4 rounded-lg hidden text-lg font-medium"></div>
+        </div>
+    </section>
+
+    <footer class="mt-20 text-center text-gray-500">
+        <p>Outil Pédagogique FLE - 2026</p>
+    </footer>
+
+    <script>
+        const regions = [
+            {
+                nom: "Québec", flag: "🇨🇦", 
+                curiosite: "On adore manger la 'Poutine' (frites, fromage et sauce).", 
+                expression: "C'est le fun !", 
+                traduction: "¡Es divertido!"
+            },
+            {
+                nom: "Sénégal", flag: "🇸🇳", 
+                curiosite: "La 'Teranga' est la valeur d'hospitalité nationale.", 
+                expression: "Ça va bien, inch'Allah.", 
+                traduction: "Todo va bien, si Dios quiere."
+            },
+            {
+                nom: "France", flag: "🇫🇷", 
+                curiosite: "On achète sa baguette fraîche tous les matins.", 
+                expression: "Oh là là !", 
+                traduction: "¡Madre mía / Vaya!"
+            },
+            {
+                nom: "Belgique", flag: "🇧🇪", 
+                curiosite: "On dit 'nonante' au lieu de 'quatre-vingt-dix'.", 
+                expression: "Tu sais quoi ?", 
+                traduction: "¿Sabes qué?"
+            },
+            {
+                nom: "Martinique", flag: "🇲🇶", 
+                curiosite: "Le 'Zouk' est une danse et musique locale très célèbre.", 
+                expression: "Doudou", 
+                traduction: "Cariño / Mi amor"
+            }
+        ];
+
+        const situations = [
+            {
+                text: "Estás en Senegal y conoces a una persona mayor. ¿Cómo la saludas correctamente?",
+                options: [
+                    { t: "Dices hola y sigues caminando rápido.", correct: false, msg: "¡Cuidado! En Senegal el saludo es un ritual social largo e importante." },
+                    { t: "Le das la mano y te tomas el tiempo de preguntar por su familia.", correct: true, msg: "¡Exacto! La cortesía y el interés por la familia son fundamentales." },
+                    { t: "Le haces un gesto de lejos con la mano.", correct: false, msg: "Un poco frío para la cultura de la Teranga." }
+                ]
+            }
+        ];
+
+        // Función de Audio (TTS)
+        function listen(text) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.9;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Renderizar Regiones
+        const grid = document.getElementById('regions-grid');
+        regions.forEach(r => {
+            const card = document.createElement('div');
+            card.className = "card bg-white p-6 rounded-xl shadow-lg border-l-8 border-blue-400";
+            card.innerHTML = `
+                <div class="text-5xl mb-2">${r.flag}</div>
+                <h3 class="text-2xl font-bold text-blue-900">${r.nom}</h3>
+                <p class="text-gray-700 my-3"><strong>Dato:</strong> ${r.curiosite}</p>
+                <div class="bg-blue-50 p-3 rounded-lg">
+                    <p class="text-blue-800 font-bold italic">"${r.expression}"</p>
+                    <p class="text-xs text-blue-600 mb-2">${r.traduction}</p>
+                    <button onclick="listen('${r.expression}')" class="bg-blue-600 text-white px-4 py-1 rounded-full text-sm hover:bg-blue-700 transition">
+                        🔈 Écouter
+                    </button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
+        // Lógica del Quiz
+        const sit = situations[0];
+        document.getElementById('situation-text').innerText = sit.text;
+        const optContainer = document.getElementById('options-container');
+        const feedback = document.getElementById('feedback');
+
+        sit.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = "w-full text-left p-4 rounded-xl border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition text-lg";
+            btn.innerText = opt.t;
+            btn.onclick = () => {
+                feedback.classList.remove('hidden', 'bg-green-100', 'bg-red-100', 'text-green-800', 'text-red-800');
+                feedback.classList.add(opt.correct ? 'bg-green-100' : 'bg-red-100');
+                feedback.classList.add(opt.correct ? 'text-green-800' : 'text-red-800');
+                feedback.innerText = (opt.correct ? "✅ Bravo ! " : "❌ Oups... ") + opt.msg;
+            };
+            optContainer.appendChild(btn);
+        });
+    </script>
+</body>
+</html>
